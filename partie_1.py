@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 def affiche_grille(w, x, title):
     
-    plt.figure()
+    fig = plt.figure()
     plt.title(title)
     plt.xlabel('Dimension 1')
     plt.ylabel('Dimension 2')
@@ -27,6 +27,10 @@ def affiche_grille(w, x, title):
         t2 = w[:,b,1]
         plt.plot(t1[0], t2[0], 'r*')
         plt.hold(True)
+    
+    plt.show()
+    plt.pause(2)
+    plt.close(fig)
 
     
 
@@ -35,28 +39,39 @@ data = scipy.io.loadmat('data.mat')
 xdisc = data.get('xdisc')
 xunif = data.get('xunif')
 
-plt.figure()
-plt.title('xdisc data representation')
-plt.xlabel('Dimension 1')
-plt.ylabel('Dimension 2')
-plt.plot(xdisc[0,:], xdisc[1,:], 'o')
-plt.show()
-
-plt.figure()
-plt.title('xunif data representation')
-plt.xlabel('Dimension 1')
-plt.ylabel('Dimension 2')
-plt.plot(xunif[0,:], xunif[1,:], 'o')
-plt.show()
+#plt.figure()
+#plt.title('xdisc data representation')
+#plt.xlabel('Dimension 1')
+#plt.ylabel('Dimension 2')
+#plt.plot(xdisc[0,:], xdisc[1,:], 'o')
+#plt.show()
+#
+#plt.figure()
+#plt.title('xunif data representation')
+#plt.xlabel('Dimension 1')
+#plt.ylabel('Dimension 2')
+#plt.plot(xunif[0,:], xunif[1,:], 'o')
+#plt.show()
 
 
 """2D Kohonen Map"""
-K = 8
+K = 12
 n = 2
 
-nbiter = 10000
+nbiter = 15000
 
-X = np.copy(xdisc)
+nbr_affichage = 10
+
+affichage_iter = np.zeros((nbr_affichage+1))
+pas = int(np.floor(nbiter/nbr_affichage))
+pred_value = 0
+for l in range(nbr_affichage):
+    affichage_iter[l+1] = pred_value + pas
+    pred_value = pred_value + pas
+    
+compt = 0
+
+X = np.copy(xunif)
 length_x = np.shape(X)[1]
 
 w = np.random.random((K,K,n))
@@ -109,9 +124,18 @@ for i in range(nbiter):
             wp[x,y,1] = wp[x,y,1] + h*(X[1,coord_rand] - wp[x,y,1])
     
     print('itération = ', i)
-        
     
-titre = 'Result Kohonen 2D xdisc'
+    if((i) == int(affichage_iter[compt])):
+        
+        titre = 'Résultat Kohonen itération = ' + str(i) 
+        affiche_grille(wp, X, titre) 
+        compt = compt + 1
+    elif (i==1):
+        titre = 'Résultat Kohonen itération = ' + str(i) 
+        affiche_grille(wp, X, titre)
+        compt = compt + 1
+    
+titre = 'Final Result Kohonen 2D xdisc'
 affiche_grille(wp, X, titre) 
 
 
