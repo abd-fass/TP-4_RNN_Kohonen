@@ -8,32 +8,7 @@ Created on Wed Jan  9 16:33:10 2019
 import numpy as np
 import scipy.io 
 import matplotlib.pyplot as plt
-
-
-def affiche_grille(w, x, title):
-    
-    fig = plt.figure()
-    plt.title(title)
-    plt.xlabel('Dimension 1')
-    plt.ylabel('Dimension 2')
-    plt.plot(x[0,:], x[1,:], 'bo')
-    for b in range(np.shape(w)[0]):
-        t1 = w[b,:,0]
-        t2 = w[b,:,1]
-        plt.plot(t1[:], t2[:], 'r*')
-        plt.hold(True)
-    for b in range(np.shape(w)[1]):
-        t1 = w[:,b,0]
-        t2 = w[:,b,1]
-        plt.plot(t1[0], t2[0], 'r*')
-        plt.hold(True)
-    
-    plt.show()
-    plt.pause(2)
-    plt.close(fig)
-
-    
-
+import functions as f
 
 data = scipy.io.loadmat('data.mat')
 xdisc = data.get('xdisc')
@@ -55,88 +30,45 @@ xunif = data.get('xunif')
 
 
 """2D Kohonen Map"""
-K = 12
+K = 4
 n = 2
 
-nbiter = 15000
+nbiter = 10000
 
 nbr_affichage = 10
 
-affichage_iter = np.zeros((nbr_affichage+1))
-pas = int(np.floor(nbiter/nbr_affichage))
-pred_value = 0
-for l in range(nbr_affichage):
-    affichage_iter[l+1] = pred_value + pas
-    pred_value = pred_value + pas
-    
-compt = 0
 
-X = np.copy(xunif)
-length_x = np.shape(X)[1]
+sigma_max = 3.0
+sigma_min = 0.1
+mu_max = 0.5
+mu_min = 0.1
 
-w = np.random.random((K,K,n))
+Wp_xunif = f.kohonen2d(xunif, K, mu_max, mu_min, sigma_max, sigma_min, nbiter, nbr_affichage, 'xunif')
 
-wp = np.copy(w)
-mu = np.zeros((1,nbiter))
-sigma = np.zeros((1,nbiter))
-pas_mu = (0.5 - 0.1)/(nbiter - 1)
-pas_sigma = (3.0 - 0.1)/(nbiter - 1)
-mu[0,0] = 0.5
-sigma[0,0] = 3.0
-for m in range(nbiter - 1):
-    mu[0,m+1] = mu[0,m] - pas_mu
-    sigma[0,m+1] = sigma[0,m] - pas_sigma
+titre = 'Final Result Kohonen 2D xunif'
+f.affiche_grille_final(Wp_xunif, xunif, titre) 
 
+#Classification
+clas_xunif = f.clas_Kohonen2D(xunif, K, Wp_xunif)
 
+#Display classification
 
-dist = np.ones((K,K))
+f.affiche_clas_kohonen2D(xunif, clas_xunif, Wp_xunif, 'xunif data set')
 
-for i in range(nbiter):
-    
-    coord_rand = np.random.randint(length_x)
-    
-    for x in range(K):
-        for y in range(K):
-            
-            dist[x,y] =  np.sqrt((X[0,coord_rand] - wp[x,y,0])**2 + (X[1,coord_rand] - wp[x,y,1])**2)
-    
-    #coord_w_elu = np.where(dist == dist.min())
-    #w_elu  = wp[coord_w_elu]
-    
-    min_dist = dist.min()
-            
-    for l in range(K):
-        for c in range(K):
-            if (dist[l,c] == min_dist):
-                coord_w_elu_X = l
-                coord_w_elu_Y = c
-    
-    for x in range(K):
-        for y in range(K):
-            
-            A = np.sqrt(((x - coord_w_elu_X)**2 + (y - coord_w_elu_Y)**2))
-            B = A / (2*(sigma[0,i]**2))
-            C = np.exp(-B)
-            h = mu[0,i]*C
-            #h = mu[0,i]*np.exp( np.sqrt(((x - coord_w_elu_X)**2 + (y - coord_w_elu_Y)**2)) / (2*(sigma[0,i]**2)) )
-            
-            wp[x,y,0] = wp[x,y,0] + h*(X[0,coord_rand] - wp[x,y,0])
-            wp[x,y,1] = wp[x,y,1] + h*(X[1,coord_rand] - wp[x,y,1])
-    
-    print('itération = ', i)
-    
-    if((i) == int(affichage_iter[compt])):
-        
-        titre = 'Résultat Kohonen itération = ' + str(i) 
-        affiche_grille(wp, X, titre) 
-        compt = compt + 1
-    elif (i==1):
-        titre = 'Résultat Kohonen itération = ' + str(i) 
-        affiche_grille(wp, X, titre)
-        compt = compt + 1
-    
+Wp_xdisc = f.kohonen2d(xdisc, K, mu_max, mu_min, sigma_max, sigma_min, nbiter, nbr_affichage, 'xdisc')
+
 titre = 'Final Result Kohonen 2D xdisc'
-affiche_grille(wp, X, titre) 
+f.affiche_grille_final(Wp_xdisc, xdisc, titre)
+
+
+#Classification
+clas_xdisc = f.clas_Kohonen2D(xdisc, K, Wp_xunif)
+
+#Display classification
+
+f.affiche_clas_kohonen2D(xdisc, clas_xdisc, Wp_xdisc, 'xdisc data set')
+
+
 
 
 
