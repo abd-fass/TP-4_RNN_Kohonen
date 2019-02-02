@@ -5,13 +5,10 @@ Created on Sat Jan 19 15:29:28 2019
 @author: FMA
 """
 
-import numpy as np
-import scipy.io 
+import numpy as np 
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 import random
-from random import shuffle
-from random import randint
 import cv2
 
 def affiche_grille(w, x, title):
@@ -126,7 +123,7 @@ def kohonen2d(x, K, mu_max, mu_min, sigma_max, sigma_min, nbiter, nbr_affichage,
                 wp[x,y,0] = wp[x,y,0] + h*(X[0,coord_rand] - wp[x,y,0])
                 wp[x,y,1] = wp[x,y,1] + h*(X[1,coord_rand] - wp[x,y,1])
         
-        print(round(((i/(nbiter-1))*100), 2), ' % Done (Kohonen2D)')
+        print(round(((i/(nbiter-1))*100), 2), '% Done (Kohonen2D)')
         
         #Display the result for the chosen iteration
         if((i) == int(affichage_iter[compt])):
@@ -190,10 +187,10 @@ def kohonen3d(x, K, mu_max, mu_min, sigma_max, sigma_min, nbiter, nbr_affichage,
     X = np.copy(x)
     length_x = np.shape(X)[1]
         
-    #Random w
-    w_x = np.random.random((K,K,K))
-    w_y = np.random.random((K,K,K))
-    w_z = np.random.random((K,K,K))
+    #Generate w with random value=[0 255]
+    w_x = np.random.random((K,K,K))*255
+    w_y = np.random.random((K,K,K))*255
+    w_z = np.random.random((K,K,K))*255
     
     wp_x = np.copy(w_x)
     wp_y = np.copy(w_y)
@@ -246,7 +243,7 @@ def kohonen3d(x, K, mu_max, mu_min, sigma_max, sigma_min, nbiter, nbr_affichage,
                     wp[1][x,y,z] = wp[1][x,y,z] + h*(X[1,coord_rand] - wp[1][x,y,z])
                     wp[2][x,y,z] = wp[2][x,y,z] + h*(X[2,coord_rand] - wp[2][x,y,z])
         
-        print(round(((i/(nbiter-1))*100), 2), ' % Done (Kohonen3D)')
+        print(round(((i/(nbiter-1))*100), 2), '% Done (Kohonen3D)')
         
         #Display the result for the chosen iteration
         if((i) == int(affichage_iter[compt])):
@@ -291,7 +288,7 @@ def Coding_Kohonen3D(w, K, img):
             img_code[l,c,1] = coord_w_code_Y
             img_code[l,c,2] = coord_w_code_Z
             
-        print(round(((l/(np.shape(img_code)[0]-1))*100), 2), ' % Done (Coding)')
+        print(round(((l/(np.shape(img_code)[0]-1))*100), 2), '% Done (Coding)')
         
     return img_code
 
@@ -309,7 +306,7 @@ def Decoding_Kohonen3D(w, img_code):
             img_decode[ligne, colonne, 1] = np.uint8(w[1][img_code[ligne,colonne,0],img_code[ligne,colonne,1],img_code[ligne,colonne,2]])
             img_decode[ligne, colonne, 2] = np.uint8(w[2][img_code[ligne,colonne,0],img_code[ligne,colonne,1],img_code[ligne,colonne,2]])
             
-        print(round(((ligne/(np.shape(img_decode)[0]-1))*100), 2), ' % Done (Decoding)')
+        print(round(((ligne/(np.shape(img_decode)[0]-1))*100), 2), '% Done (Decoding)')
     
     return img_decode
 
@@ -359,7 +356,7 @@ def affiche_w_kohonen3D(w, K, name_data, niter):
     plt.xlabel("w")
     plt.imshow(cv2.cvtColor(img_w, cv2.COLOR_BGR2RGB))
     plt.show()
-    plt.pause(2)
+    plt.pause(1)
     plt.close(fig)
     
 def affiche_w_kohonen3D_final(w, K, name_data):
@@ -417,12 +414,6 @@ def affiche_clas_kohonen2D(x, clas, w, title):
         for name, color in colors.items())
     sorted_names = [name for hsv, name in by_hsv]
     random.shuffle(sorted_names)
-    
-    
-#    coul = ['bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko', 'bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko',
-#            'bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko', 'bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko',
-#            'bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko', 'bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko',
-#            'bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko', 'bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko']
     
     list_indice = []
     

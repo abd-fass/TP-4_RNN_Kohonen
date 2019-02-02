@@ -6,7 +6,6 @@ Created on Sat Jan 19 16:12:21 2019
 """
 
 import numpy as np
-import scipy.io 
 import matplotlib.pyplot as plt
 import functions as f
 import cv2
@@ -31,7 +30,7 @@ for i in range(np.shape(img)[0]):
 """ Kohonen3D """
 
 K = 8
-nbiter = 10000
+nbiter = 100000
 sigma_max = 3.0
 sigma_min = 0.1
 mu_max = 0.5
@@ -55,6 +54,7 @@ img_code = f.Coding_Kohonen3D(w, K, img)
 img_decode = f.Decoding_Kohonen3D(w, img_code)
 
 
+#Display result
 plt.figure()
 plt.subplot(1,2,1)
 plt.title("Original Image")
@@ -65,8 +65,8 @@ plt.title("Kohonen3D result image")
 plt.imshow(cv2.cvtColor(img_decode, cv2.COLOR_BGR2RGB))
 plt.show()
 
-""" Adding noise perturbation """
 
+""" Adding noise perturbation """
 #Matrix for the image code with noise
 img_code_noise = np.zeros(np.shape(img_code), dtype = np.uint8())
 
@@ -98,7 +98,7 @@ for row in range(np.shape(img_code)[0]):
 
 img_decode_noise = f.Decoding_Kohonen3D(w, img_code_noise)
 
-
+#Display result adding noise perturbation
 plt.figure()
 plt.subplot(1,2,1)
 plt.title("Original Image")
@@ -109,6 +109,3 @@ plt.title("Kohonen3D result image with noise")
 plt.imshow(cv2.cvtColor(img_decode_noise, cv2.COLOR_BGR2RGB))
 plt.show()
 
-#cv2.waitKey(0)
-#cv2.destroyAllWindows()
- 
